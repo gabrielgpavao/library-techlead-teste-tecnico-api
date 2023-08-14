@@ -1,6 +1,7 @@
 import { UUID } from 'node:crypto'
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 import { Book } from './book.entity'
+import { getRounds, hashSync } from 'bcryptjs'
 
 @Entity('users')
 export class User {
@@ -21,4 +22,13 @@ export class User {
 
 	@OneToMany(() => Book, (book) => book.registeredBy)
 		registeredBooks: Book[]
+
+	@BeforeInsert()
+	@BeforeUpdate()
+	hashPassword () {
+		const isEncrypted = !!getRounds(this.password)
+		if (!isEncrypted) {
+			this.password = hashSync(this.password, 10)
+		}
+	}
 }
