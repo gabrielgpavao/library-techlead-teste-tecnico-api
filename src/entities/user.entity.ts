@@ -1,9 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
+import { UUID } from 'node:crypto'
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Book } from './book.entity'
 
 @Entity('users')
 export class User {
-	@PrimaryGeneratedColumn('increment')
-		id: number
+	@PrimaryGeneratedColumn('uuid')
+		id: UUID
 
 	@Column({ type: 'varchar', length: 127 })
 		name: string
@@ -16,4 +18,7 @@ export class User {
 
 	@Column({ type: 'boolean', default: false })
 		isAdmin: boolean
+
+	@OneToMany(() => Book, (book) => book.registeredBy)
+		registeredBooks: Book[]
 }
